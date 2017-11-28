@@ -57,7 +57,7 @@ class roleGeneric extends plugin {
     /* Initialize the class 
      */
     function __construct($config,$dn){
-        plugin::plugin($config,$dn);
+        plugin::__construct($config,$dn);
         $this->is_account = TRUE;
 
         // Initialize list of occupants
