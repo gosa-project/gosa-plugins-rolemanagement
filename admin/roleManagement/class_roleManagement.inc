@@ -25,6 +25,7 @@ class roleManagement extends management
     var $plHeadline     = "Roles";
     var $plDescription  = "Assign and manage organizational roles";
     var $plIcon  = "plugins/rolemanagement/images/plugin.png";
+    var $matIcon = "manage_accounts";
 
     // Tab definition 
     protected $tabClass = "roletabs";

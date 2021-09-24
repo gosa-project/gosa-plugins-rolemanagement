@@ -147,6 +147,9 @@ class roleGeneric extends plugin {
     function execute()
     {
         plugin::execute();
+
+        $theme = getThemeName();
+
         // Get list of possible ldap bases, will be selectable in the ui.
         $tmp = $this->allowedBasesToMoveTo();
 
@@ -180,10 +183,10 @@ class roleGeneric extends plugin {
             }
         }
 
-        if(isset($_POST['add_users_cancel']) && $this->dialog instanceOf userSelect){
+        if(isset($_POST['add_users_cancel']) || isset($_POST['cancel-abort']) && $this->dialog instanceOf userSelect){
             $this->dialog = NULL;
         }
-        if(isset($_POST['add_users_finish']) && $this->dialog instanceOf userSelect){
+        if(isset($_POST['add_users_finish']) || isset($_POST['ok-save']) && $this->dialog instanceOf userSelect){
             $users = $this->dialog->detectPostActions();
             if(isset($users['targets'])){
                 $headpage = $this->dialog->getHeadpage();
@@ -214,7 +217,15 @@ class roleGeneric extends plugin {
         foreach ($this->roleOccupant as $key => $dn){
             $data[$key] = $dn;
             if(isset($this->roleOccCache[$dn])){
-                $icon = image('plugins/users/images/select_user.png');
+                switch ($theme) {
+                    case 'classic':
+                        $icon = image('plugins/users/images/select_user.png');
+                        break;
+                    
+                    default:
+                        $icon = image("<i class='material-icons'>person</i>");
+                        break;
+                }
                 $entry     = $this->roleOccCache[$dn];
                 $sn        = $entry['sn']['0'];
                 $givenName = $entry['givenName']['0'];
