@@ -28,6 +28,10 @@ use \baseSelector as baseSelector;
 use \sortableListing as sortableListing;
 use \userSelect as userSelect;
 use \msgPool as msgPool;
+use \LDAP as LDAP;
+use \msg_dialog as msg_dialog;
+use \log as log;
+use \acl as acl;
 
 class RoleGeneric extends Plugin
 {
@@ -61,7 +65,7 @@ class RoleGeneric extends Plugin
         "telephoneNumber", "facsimileTelephoneNumber", "roleOccupant"
     );
 
-    public $objCacheLoaded = FALSE;
+    public $objCacheLoaded = false;
     public $baseSelector;
     public $memberList = null;
 
@@ -70,7 +74,7 @@ class RoleGeneric extends Plugin
     function __construct($config, $dn)
     {
         parent::__construct($config, $dn);
-        $this->is_account = TRUE;
+        $this->is_account = true;
 
         // Initialize list of occupants
         $this->roleOccupant = array();
@@ -148,7 +152,6 @@ class RoleGeneric extends Plugin
         }
     }
 
-
     function getOccupants()
     {
         return ($this->roleOccupant);
@@ -168,7 +171,7 @@ class RoleGeneric extends Plugin
         // Reload the occupant cache. 
         if (!$this->objCacheLoaded) {
             $this->reload();
-            $this->objCacheLoaded = TRUE;
+            $this->objCacheLoaded = true;
         }
 
         /***************
@@ -196,7 +199,7 @@ class RoleGeneric extends Plugin
         }
 
         if (isset($_POST['add_users_cancel']) || isset($_POST['cancel-abort']) && $this->dialog instanceof userSelect) {
-            $this->dialog = NULL;
+            $this->dialog = null;
         }
         if (isset($_POST['add_users_finish']) || isset($_POST['ok-save']) && $this->dialog instanceof userSelect) {
             $users = $this->dialog->detectPostActions();
@@ -208,7 +211,7 @@ class RoleGeneric extends Plugin
                     $this->roleOccCache[$dn] = $attrs;
                 }
             }
-            $this->dialog = FALSE;
+            $this->dialog = null;
         }
 
         if ($this->dialog instanceof userSelect) {
@@ -267,7 +270,7 @@ class RoleGeneric extends Plugin
         foreach ($tmp['plProvidedAcls'] as $attr => $desc) {
             $smarty->assign($attr . "ACL", $this->getacl($attr));
         }
-        return ($smarty->fetch(get_template_path('roleGeneric.tpl', TRUE, dirname(__FILE__))));
+        return ($smarty->fetch(get_template_path('roleGeneric.tpl', true, dirname(__FILE__))));
     }
 
 
@@ -423,7 +426,7 @@ class RoleGeneric extends Plugin
             }
             if ($this->base != $this->baseSelector->getBase()) {
                 $this->base = $this->baseSelector->getBase();
-                $this->is_modified = TRUE;
+                $this->is_modified = true;
             }
         }
     }
@@ -451,7 +454,7 @@ class RoleGeneric extends Plugin
     {
         $smarty = get_smarty();
         $smarty->assign("cn", set_post($this->cn));
-        $str = $smarty->fetch(get_template_path("paste_generic.tpl", TRUE, dirname(__FILE__)));
+        $str = $smarty->fetch(get_template_path("paste_generic.tpl", true, dirname(__FILE__)));
         $ret = array();
         $ret['string'] = $str;
         $ret['status'] = "";
@@ -471,7 +474,7 @@ class RoleGeneric extends Plugin
         return (array(
             "plShortName"   => _("Generic"),
             "plDescription" => _("Role generic"),
-            "plSelfModify"  => FALSE,
+            "plSelfModify"  => false,
             "plDepends"     => array(),
             "plPriority"    => 1,
             "plSection"     => array("administration"),
@@ -494,7 +497,7 @@ class RoleGeneric extends Plugin
                     "check"         => "gosaProperty::isRdn",
                     "migrate"       => "migrate_roleRDN",
                     "group"         => "plugin",
-                    "mandatory"     => FALSE
+                    "mandatory"     => false
                 )
             ),
 

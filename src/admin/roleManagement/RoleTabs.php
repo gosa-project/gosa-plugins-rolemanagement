@@ -20,61 +20,61 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-class roletabs extends tabs
+namespace GosaRoleManagement\admin\roleManagement;
+
+use \tabs as Tabs;
+use \LDAP as LDAP;
+
+class RoleTabs extends Tabs
 {
 
-	function __construct($config, $data, $dn,$hide_refs = FALSE, $hide_acls = FALSE)
+	function __construct($config, $data, $dn, $hide_refs = FALSE, $hide_acls = FALSE)
 	{
-		tabs::__construct($config, $data, $dn,$hide_refs, $hide_acls);
-		$this->base = $baseobject= $this->by_object['roleGeneric']->base;
+		parent::__construct($config, $data, $dn, $hide_refs, $hide_acls);
 		$this->addSpecialTabs();
-
-    
 	}
 
-	function save_object($save_current= FALSE)
+	function save_object($save_current = FALSE)
 	{
-		tabs::save_object($save_current);
+		parent::save_object($save_current);
 
 		/* Update reference, transfer variables */
-		$baseobject= $this->by_object['roleGeneric'];
-		foreach ($this->by_object as $name => $obj){
+		$baseobject = $this->by_object['roleGeneric'];
+		foreach ($this->by_object as $name => $obj) {
 
 			/* Don't touch base object */
-			if ($name != 'roleGeneric'){
-				$obj->parent= &$this;
-				$obj->cn= $baseobject->cn;
-				$this->by_object[$name]= $obj;
+			if ($name != 'roleGeneric') {
+				$obj->parent = &$this;
+				$obj->cn = $baseobject->cn;
+				$this->by_object[$name] = $obj;
 			}
 		}
 	}
 
-  function save($ignore_account= FALSE)
+	function save($ignore_account = false)
 	{
-		$baseobject= $this->by_object['roleGeneric'];
+		$baseobject = $this->by_object['roleGeneric'];
 
 		/* Check for new 'dn', in order to propagate the
 		   'dn' to all plugins */
-        $cn      = preg_replace('/,/', '\,', $baseobject->cn); 
-        $cn      = preg_replace('/"/', '\"', $cn); 
-		$new_dn=  @LDAP::convert('cn='.$cn.','.get_ou("roleGeneric", "roleRDN").$baseobject->base);
+		$cn      = preg_replace('/,/', '\,', $baseobject->cn);
+		$cn      = preg_replace('/"/', '\"', $cn);
+		$new_dn =  @LDAP::convert('cn=' . $cn . ',' . get_ou("roleGeneric", "roleRDN") . $baseobject->base);
 
 		/* Move role? */
-		if ($this->dn != $new_dn){
+		if ($this->dn != $new_dn) {
 
 			/* Write entry on new 'dn' */
-			if ($this->dn != "new"){
-				$baseobject->update_acls($this->dn,$new_dn);
+			if ($this->dn != "new") {
+				$baseobject->update_acls($this->dn, $new_dn);
 				$baseobject->move($this->dn, $new_dn);
-				$this->by_object['roleGeneric']= $baseobject;
+				$this->by_object['roleGeneric'] = $baseobject;
 			}
 
 			/* Happen to use the new one */
-			$this->dn= $new_dn;
+			$this->dn = $new_dn;
 		}
-		$ret= tabs::save();
+		$ret = parent::save();
 		return $ret;
 	}
 }
-
-?>
