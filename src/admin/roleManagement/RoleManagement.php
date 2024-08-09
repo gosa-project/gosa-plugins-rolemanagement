@@ -29,7 +29,7 @@ use \filter as filter;
 use \CopyPasteHandler as CopyPasteHandler;
 use \SnapshotHandler as SnapshotHandler;
 
-class roleManagement extends Management
+class RoleManagement extends Management
 {
     var $plHeadline     = "Roles";
     var $plDescription  = "Assign and manage organizational roles";

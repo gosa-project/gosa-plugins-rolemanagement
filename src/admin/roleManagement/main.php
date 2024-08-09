@@ -20,11 +20,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+namespace GosaRoleManagement\admin\roleManagement;
+use \session as session;
+
 /* Remove locks created by this plugin
  */
+
 if ($remove_lock) {
-    if (session::is_set('roleManagement')) {
-        $macl = session::get('roleManagement');
+    if (session::is_set('RoleManagement')) {
+        $macl = session::get('RoleManagement');
         $macl->remove_lock();
     }
 }
@@ -32,22 +36,22 @@ if ($remove_lock) {
 /* Remove this plugin from session
  */
 if ($cleanup) {
-    session::un_set('roleManagement');
+    session::un_set('RoleManagement');
 } else {
 
     /* Create rolemanagement object on demand */
-    if (!session::is_set('roleManagement')) {
-        $roleManagement = new roleManagement($config, $ui);
-        session::set('roleManagement', $roleManagement);
+    if (!session::is_set('RoleManagement')) {
+        $roleManagement = new RoleManagement($config, $ui);
+        session::set('RoleManagement', $roleManagement);
     }
-    $roleManagement = session::get('roleManagement');
+    $roleManagement = session::get('RoleManagement');
     $display = $roleManagement->execute();
 
     /* Reset requested? */
     if (isset($_GET['reset']) && $_GET['reset'] == 1) {
-        session::un_set('roleManagement');
+        session::un_set('RoleManagement');
     }
 
     /* Show and save dialog */
-    session::set('roleManagement', $roleManagement);
+    session::set('RoleManagement', $roleManagement);
 }
