@@ -23,9 +23,7 @@
 namespace GosaRoleManagement\admin\roleManagement;
 use \session as session;
 
-/* Remove locks created by this plugin
- */
-
+// Remove locks created by this plugin
 if ($remove_lock) {
     if (session::is_set('RoleManagement')) {
         $macl = session::get('RoleManagement');
@@ -33,13 +31,11 @@ if ($remove_lock) {
     }
 }
 
-/* Remove this plugin from session
- */
+// Remove this plugin from session
 if ($cleanup) {
     session::un_set('RoleManagement');
 } else {
-
-    /* Create rolemanagement object on demand */
+    // Create rolemanagement object on demand
     if (!session::is_set('RoleManagement')) {
         $roleManagement = new RoleManagement($config, $ui);
         session::set('RoleManagement', $roleManagement);
