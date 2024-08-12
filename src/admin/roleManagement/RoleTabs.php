@@ -59,7 +59,7 @@ class RoleTabs extends Tabs
 		   'dn' to all plugins */
 		$cn      = preg_replace('/,/', '\,', $baseobject->cn);
 		$cn      = preg_replace('/"/', '\"', $cn);
-		$new_dn =  @LDAP::convert('cn=' . $cn . ',' . get_ou("roleGeneric", "roleRDN") . $baseobject->base);
+		$new_dn =  LDAP::convert('cn=' . $cn . ',' . get_ou("roleGeneric", "roleRDN") . $baseobject->base);
 
 		/* Move role? */
 		if ($this->dn != $new_dn) {
