@@ -270,7 +270,7 @@ class RoleGeneric extends Plugin
         foreach ($tmp['plProvidedAcls'] as $attr => $desc) {
             $smarty->assign($attr . "ACL", $this->getacl($attr));
         }
-        return ($smarty->fetch(get_template_path('roleGeneric.tpl', true, dirname(__FILE__))));
+        return $this->smartyFetch(get_template_path('roleGeneric.tpl', true, dirname(__FILE__)), 'roleManagement');
     }
 
 
@@ -454,7 +454,7 @@ class RoleGeneric extends Plugin
     {
         $smarty = get_smarty();
         $smarty->assign("cn", set_post($this->cn));
-        $str = $smarty->fetch(get_template_path("paste_generic.tpl", true, dirname(__FILE__)));
+        $str = $this->smartyFetch((get_template_path("paste_generic.tpl", true, dirname(__FILE__))));
         $ret = array();
         $ret['string'] = $str;
         $ret['status'] = "";
