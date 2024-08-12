@@ -37,7 +37,7 @@ class RoleManagement extends Management
     var $matIcon = "manage_accounts";
 
     // Tab definition 
-    protected $tabClass = "roletabs";
+    protected $tabClass = 'GosaRoleManagement\admin\roleManagement\RoleTabs';
     protected $tabType = "ROLETABS";
     protected $aclCategory = "roles";
     protected $aclPlugin   = "role";
