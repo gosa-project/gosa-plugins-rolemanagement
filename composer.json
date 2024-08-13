@@ -1,5 +1,5 @@
 {
-    "name": "gonicus/gosa-plugin-rolemanagement",
+    "name": "gonicus/gosa2-plugin-rolemanagement",
     "description": "GOsa² plugin for role management",
     "type": "library",
     "license": [
