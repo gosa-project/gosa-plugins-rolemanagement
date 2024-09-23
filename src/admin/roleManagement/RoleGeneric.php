@@ -333,7 +333,7 @@ class RoleGeneric extends Plugin
         $ldap = $this->config->get_ldap_link();
         $ldap->rmdir($this->dn);
         if (!$ldap->success()) {
-            msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $this->dn, 0, get_class()));
+            msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $this->dn, 0, __CLASS__));
         }
 
         // Log action.
@@ -379,7 +379,7 @@ class RoleGeneric extends Plugin
                 $ldap->get_error(),
                 $this->dn,
                 LDAP_MOD,
-                get_class()
+                __CLASS__
             ));
             return (1);
         }
@@ -480,7 +480,7 @@ class RoleGeneric extends Plugin
             "plSection"     => array("administration"),
             "plRequirements" => array(
                 'ldapSchema' => array('gosaRole' => '>=2.7'),
-                'onFailureDisablePlugin' => array(get_class(), 'roleManagement')
+                'onFailureDisablePlugin' => array(__CLASS__, 'roleManagement')
             ),
             "plCategory"    => array("roles" => array(
                 "description"  => _("Roles"),
