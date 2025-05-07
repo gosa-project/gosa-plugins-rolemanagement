@@ -37,32 +37,35 @@ class RoleGeneric extends Plugin
 {
 
     // The variables this plugin takes care of.
-    public $cn = "";
-    public $description = "";
-    public $telephoneNumber = "";
-    public $facsimileTelephoneNumber = "";
+    public $cn = '';
+    public $description = '';
+    public $telephoneNumber = '';
+    public $facsimileTelephoneNumber = '';
 
     // The objects base 
-    public $base = "";
+    public $base = '';
 
     // Keep track if possible ng aming modifications
-    public $orig_dn = "";
-    public $orig_cn = "";
-    public $orig_base = "";
+    public $orig_dn = '';
+    public $orig_cn = '';
+    public $orig_base = '';
 
     // The object classes written by this plugin
     public $objectclasses = array("top", "organizationalRole");
 
     // The list of occupants  ([dn])
-    public $roleOccupant = array();
+    public $roleOccupant = [];
 
     // The roleOccupant cache, dn=>attrs
-    public $roleOccCache = array();
+    public $roleOccCache = [];
 
     // A list of attributes managed by this plugin
     public $attributes = array(
-        "cn", "description",
-        "telephoneNumber", "facsimileTelephoneNumber", "roleOccupant"
+        'cn',
+        'description',
+        'telephoneNumber',
+        'facsimileTelephoneNumber',
+        'roleOccupant'
     );
 
     public $objCacheLoaded = false;
@@ -77,7 +80,7 @@ class RoleGeneric extends Plugin
         $this->is_account = true;
 
         // Initialize list of occupants
-        $this->roleOccupant = array();
+        $this->roleOccupant = [];
         if (isset($this->attrs['roleOccupant'])) {
             for ($i = 0; $i < $this->attrs['roleOccupant']['count']; $i++) {
                 $this->roleOccupant[] = $this->attrs['roleOccupant'][$i];
@@ -85,11 +88,11 @@ class RoleGeneric extends Plugin
         }
 
         // Detect the objects base
-        if ($this->dn == "new") {
+        if ($this->dn == 'new') {
             $ui = get_userinfo();
             $this->base = dn2base(session::global_is_set("CurrentMainBase") ? "cn=dummy," . session::global_get("CurrentMainBase") : $ui->dn);
         } else {
-            $this->base = preg_replace("/^[^,]+," . preg_quote(get_ou("roleGeneric", "roleRDN"), '/i') . "/", "", $this->dn);
+            $this->base = preg_replace("/^[^,]+," . preg_quote(get_ou("roleGeneric", "roleRDN"), '/i') . "/", '', $this->dn);
         }
 
         // Keep track of naming attribute modifications
@@ -121,12 +124,14 @@ class RoleGeneric extends Plugin
      */
     function reload()
     {
+        global $config;
+
         // Entries can't be added twice. 
         $attrs = array("description", "objectClass", "uid", "cn", 'sn', 'givenName');
         $this->roleOccupant = array_unique($this->roleOccupant);
         $this->roleOccupant = array_values($this->roleOccupant);
 
-        $ldap = $this->config->get_ldap_link();
+        $ldap = $config->get_ldap_link();
         foreach ($this->roleOccupant as $dn) {
             if (!isset($this->roleOccCache[$dn])) {
                 if ($ldap->dn_exists($dn)) {
@@ -154,13 +159,14 @@ class RoleGeneric extends Plugin
 
     function getOccupants()
     {
-        return ($this->roleOccupant);
+        return $this->roleOccupant;
     }
 
     /* Generate HTML output of this plugin.
      */
     function execute()
     {
+        global $config;
         parent::execute();
 
         $theme = getThemeName();
@@ -179,7 +185,7 @@ class RoleGeneric extends Plugin
          ***************/
 
         if (isset($_POST['edit_membership']) && !$this->dialog instanceof userSelect) {
-            $this->dialog = new userSelect($this->config, get_userinfo());
+            $this->dialog = new userSelect($config, get_userinfo());
         }
         $this->memberList->save_object();
         $action = $this->memberList->getAction();
@@ -215,10 +221,9 @@ class RoleGeneric extends Plugin
         }
 
         if ($this->dialog instanceof userSelect) {
-
             // Build up blocklist
             session::set('filterBlacklist', array('dn' => $this->roleOccupant));
-            return ($this->dialog->execute());
+            return $this->dialog->execute();
         }
 
 
@@ -228,7 +233,7 @@ class RoleGeneric extends Plugin
 
         $this->memberList->setAcl($this->getacl("roleOccupant"));
 
-        $data = $lData = array();
+        $data = $lData = [];
         foreach ($this->roleOccupant as $key => $dn) {
             $data[$key] = $dn;
             if (isset($this->roleOccCache[$dn])) {
@@ -238,7 +243,7 @@ class RoleGeneric extends Plugin
                         break;
 
                     default:
-                        $icon = image("<i class='material-icons'>person</i>");
+                        $icon = image('<i class="material-icons">person</i>');
                         break;
                 }
                 $entry     = $this->roleOccCache[$dn];
@@ -274,22 +279,24 @@ class RoleGeneric extends Plugin
     }
 
 
-    /* Check user input and return a list of 'invalid input' messages.
+    /**
+     * Check user input and return a list of 'invalid input' messages.
      */
     function check()
     {
+        global $config;
         $message = parent::check();
 
         // Set the new acl base 
-        if ($this->dn == "new") {
+        if ($this->dn == 'new') {
             $this->set_acl_base($this->base);
         }
 
         // Check if we are allowed to create/move this user
-        if ($this->orig_dn == "new" && !$this->acl_is_createable($this->base)) {
+        if ($this->orig_dn == 'new' && !$this->acl_is_createable($this->base)) {
             $message[] = msgPool::permCreate();
         } elseif (
-            $this->orig_dn != "new" &&
+            $this->orig_dn != 'new' &&
             !$this->acl_is_moveable($this->base) &&
             ($this->orig_base != $this->base || $this->orig_cn != $this->cn)
         ) {
@@ -302,7 +309,7 @@ class RoleGeneric extends Plugin
         }
 
         /* must: cn */
-        if ($this->cn == "") {
+        if ($this->cn == '') {
             $message[] = msgPool::required(_("Name"));
         }
 
@@ -311,26 +318,28 @@ class RoleGeneric extends Plugin
         }
 
         // Check if this name is uniq for roles.
-        $ldap = $this->config->get_ldap_link();
-        $ldap->cd($this->config->current['BASE']);
+        $ldap = $config->get_ldap_link();
+        $ldap->cd($config->current['BASE']);
         $ldap->search("(&(objectClass=organizationalRole)(cn=$this->cn))", array("cn"));
         $ldap->fetch();
         if ($ldap->count() != 0 && ($this->dn == 'new' || $this->cn != $this->orig_cn)) {
             $message[] = msgPool::duplicated(_("Name"));
         }
 
-        return ($message);
+        return $message;
     }
 
 
-    /* Removes the object from the ldap database
+    /**
+     * Removes the object from the ldap database
      */
     function remove_from_parent()
     {
+        global $config;
         parent::remove_from_parent();
 
         // Remove this object.
-        $ldap = $this->config->get_ldap_link();
+        $ldap = $config->get_ldap_link();
         $ldap->rmdir($this->dn);
         if (!$ldap->success()) {
             msg_dialog::display(_("LDAP error"), msgPool::ldaperror($ldap->get_error(), $this->dn, 0, __CLASS__));
@@ -348,6 +357,7 @@ class RoleGeneric extends Plugin
      */
     function save()
     {
+        global $config;
 
         // Ensure that we've added objects only once.
         $this->roleOccupant = array_unique($this->roleOccupant);
@@ -357,16 +367,16 @@ class RoleGeneric extends Plugin
 
         /* Save data. Using 'modify' implies that the entry is already present, use 'add' for
            new entries. So do a check first... */
-        $ldap = $this->config->get_ldap_link();
+        $ldap = $config->get_ldap_link();
         $ldap->cat($this->dn, array('dn'));
         if ($ldap->fetch()) {
             $mode = "modify";
         } else {
             $mode = "add";
-            $ldap->cd($this->config->current['BASE']);
+            $ldap->cd($config->current['BASE']);
             $ldap->create_missing_trees(preg_replace('/^[^,]+,/', '', $this->dn));
         }
-        @DEBUG(DEBUG_LDAP, __LINE__, __FUNCTION__, __FILE__, $this->attributes, "Save via $mode");
+        DEBUG(DEBUG_LDAP, __LINE__, __FUNCTION__, __FILE__, $this->attributes, "Save via $mode");
 
         // Finally write data with selected 'mode'
         $this->cleanup();
@@ -388,8 +398,8 @@ class RoleGeneric extends Plugin
         $this->handle_post_events($mode);
 
         // Update ACL dependencies too 
-        if ($this->dn != $this->orig_dn && $this->orig_dn != "new") {
-            $tmp = new acl($this->config, $this->parent, $this->dn);
+        if ($this->dn != $this->orig_dn && $this->orig_dn != 'new') {
+            $tmp = new acl($config, $this->parent, $this->dn);
             $tmp->update_acl_membership($this->orig_dn, $this->dn);
         }
 
@@ -437,11 +447,11 @@ class RoleGeneric extends Plugin
         parent::PrepareForCopyPaste($source);
 
         /* Load member objects */
-        $this->roleOccupant = array();
+        $this->roleOccupant = [];
         if (isset($source['roleOccupant'])) {
             foreach ($source['roleOccupant'] as $key => $value) {
                 if ("$key" != "count") {
-                    $value = @LDAP::convert($value);
+                    $value = LDAP::convert($value);
                     $this->roleOccupant["$value"] = "$value";
                 }
             }
@@ -455,10 +465,10 @@ class RoleGeneric extends Plugin
         $smarty = get_smarty();
         $smarty->assign("cn", set_post($this->cn));
         $str = $this->smartyFetch((get_template_path("paste_generic.tpl", true, dirname(__FILE__))));
-        $ret = array();
+        $ret = [];
         $ret['string'] = $str;
-        $ret['status'] = "";
-        return ($ret);
+        $ret['status'] = '';
+        return $ret;
     }
 
     function saveCopyDialog()
@@ -475,7 +485,7 @@ class RoleGeneric extends Plugin
             "plShortName"   => _("Generic"),
             "plDescription" => _("Role generic"),
             "plSelfModify"  => false,
-            "plDepends"     => array(),
+            "plDepends"     => [],
             "plPriority"    => 1,
             "plSection"     => array("administration"),
             "plRequirements" => array(
