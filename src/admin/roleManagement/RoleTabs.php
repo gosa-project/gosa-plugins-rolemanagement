@@ -28,7 +28,7 @@ use \LDAP as LDAP;
 class RoleTabs extends Tabs
 {
 
-	function __construct($config, $data, $dn, $hide_refs = FALSE, $hide_acls = FALSE)
+	public function __construct($config, $data, $dn, $hide_refs = FALSE, $hide_acls = FALSE)
 	{
 		parent::__construct($config, $data, $dn, $hide_refs, $hide_acls);
 		$this->addSpecialTabs();
@@ -39,11 +39,11 @@ class RoleTabs extends Tabs
 		parent::save_object($save_current);
 
 		/* Update reference, transfer variables */
-		$baseobject = $this->by_object['roleGeneric'];
+		$baseobject = $this->by_object['GosaRoleManagement\admin\roleManagement\RoleGeneric'];
 		foreach ($this->by_object as $name => $obj) {
 
 			/* Don't touch base object */
-			if ($name != 'roleGeneric') {
+			if ($name != 'GosaRoleManagement\admin\roleManagement\RoleGeneric') {
 				$obj->parent = &$this;
 				$obj->cn = $baseobject->cn;
 				$this->by_object[$name] = $obj;
@@ -53,22 +53,21 @@ class RoleTabs extends Tabs
 
 	function save($ignore_account = false)
 	{
-		$baseobject = $this->by_object['roleGeneric'];
+		$baseobject = $this->by_object['GosaRoleManagement\admin\roleManagement\RoleGeneric'];
 
-		/* Check for new 'dn', in order to propagate the
-		   'dn' to all plugins */
+		// Check for new 'dn', in order to propagate the 'dn' to all plugins
 		$cn      = preg_replace('/,/', '\,', $baseobject->cn);
 		$cn      = preg_replace('/"/', '\"', $cn);
-		$new_dn =  LDAP::convert('cn=' . $cn . ',' . get_ou("roleGeneric", "roleRDN") . $baseobject->base);
+		$new_dn =  LDAP::convert('cn=' . $cn . ',' . get_ou('GosaRoleManagement\admin\roleManagement\RoleGeneric', 'roleRDN') . $baseobject->base);
 
 		/* Move role? */
 		if ($this->dn != $new_dn) {
 
 			/* Write entry on new 'dn' */
-			if ($this->dn != "new") {
+			if ($this->dn != 'new') {
 				$baseobject->update_acls($this->dn, $new_dn);
 				$baseobject->move($this->dn, $new_dn);
-				$this->by_object['roleGeneric'] = $baseobject;
+				$this->by_object['GosaRoleManagement\admin\roleManagement\RoleGeneric'] = $baseobject;
 			}
 
 			/* Happen to use the new one */

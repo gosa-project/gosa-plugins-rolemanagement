@@ -419,7 +419,7 @@ class RoleGeneric extends Plugin
     function allowedBasesToMoveTo()
     {
         $bases  = $this->get_allowed_bases();
-        return ($bases);
+        return $bases;
     }
 
 
