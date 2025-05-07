@@ -48,7 +48,7 @@ class RoleManagement extends Management
         $this->config = $config;
         $this->ui = $ui;
 
-        $this->storagePoints = array(get_ou("roleGeneric", "roleRDN"));
+        $this->storagePoints = array(get_ou('GosaRoleManagement\admin\roleManagement\RoleGeneric', "roleRDN"));
 
         // Build filter
         if (session::global_is_set(get_class($this) . "_filter")) {
